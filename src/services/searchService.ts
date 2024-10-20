@@ -6,7 +6,16 @@ export class SearchService {
     query: string,
     teamPage: number = 1,
     fixturePage: number = 1,
-    limit: number = 10
+    limit: number = 10,
+    filters: {
+      status?: "pending" | "completed",
+      season?: string,
+      venue?: string,
+      dateFrom?: Date,
+      dateTo?: Date,
+      team?: string,
+      result?: { homeScore: number, awayScore: number }
+    } = {}
   ) {
     const teamSkip = (teamPage - 1) * limit;
     const fixtureSkip = (fixturePage - 1) * limit;
@@ -25,9 +34,7 @@ export class SearchService {
       // If it's a date query, we only search fixtures
       const startOfDay = new Date(dateQuery.setHours(0, 0, 0, 0));
       const endOfDay = new Date(dateQuery.setHours(23, 59, 59, 999));
-      fixtureSearchConditions = {
-        date: { $gte: startOfDay, $lte: endOfDay }
-      };
+      fixtureSearchConditions.date = { $gte: startOfDay, $lte: endOfDay };
     } else {
       // First, check if the query exactly matches a stadium name
       const stadiumMatch = await Team.findOne({
@@ -91,6 +98,36 @@ export class SearchService {
       }
     }
 
+    // Add new filter conditions
+    if (filters.status) {
+      fixtureSearchConditions.status = filters.status;
+    }
+    if (filters.season) {
+      fixtureSearchConditions.season = new RegExp(filters.season, 'i');
+    }
+    if (filters.venue) {
+      fixtureSearchConditions.venue = new RegExp(filters.venue, 'i');
+    }
+    if (filters.dateFrom || filters.dateTo) {
+      fixtureSearchConditions.date = fixtureSearchConditions.date || {};
+      if (filters.dateFrom) fixtureSearchConditions.date.$gte = filters.dateFrom;
+      if (filters.dateTo) fixtureSearchConditions.date.$lte = filters.dateTo;
+    }
+    if (filters.team) {
+      const teamId = await Team.findOne({ name: new RegExp(filters.team, 'i') }).select('_id');
+      if (teamId) {
+        fixtureSearchConditions.$or = fixtureSearchConditions.$or || [];
+        fixtureSearchConditions.$or.push(
+          { homeTeam: teamId._id },
+          { awayTeam: teamId._id }
+        );
+      }
+    }
+    if (filters.result) {
+      fixtureSearchConditions['result.homeScore'] = filters.result.homeScore;
+      fixtureSearchConditions['result.awayScore'] = filters.result.awayScore;
+    }
+
     const teamCountPromise = isDateQuery
       ? Promise.resolve(0)
       : isStadiumSearch
@@ -114,6 +151,7 @@ export class SearchService {
       query: query,
       isDateSearch: isDateQuery,
       isStadiumSearch: isStadiumSearch,
+      filters: filters,  // Include applied filters in the response
       results: {
         teams: {
           items: teams,

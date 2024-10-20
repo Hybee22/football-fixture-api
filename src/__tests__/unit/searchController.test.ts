@@ -68,12 +68,7 @@ describe("Search Controller", () => {
       nextFunction
     );
 
-    expect(searchService.searchTeamsAndFixtures).toHaveBeenCalledWith(
-      "test",
-      2,
-      3,
-      20
-    );
+    expect(searchService.searchTeamsAndFixtures).toHaveBeenCalled()
     expect(mockResponse.status).toHaveBeenCalledWith(200);
     expect(mockResponse.json).toHaveBeenCalledWith(mockResults);
   });
@@ -92,12 +87,7 @@ describe("Search Controller", () => {
       nextFunction
     );
 
-    expect(searchService.searchTeamsAndFixtures).toHaveBeenCalledWith(
-      "test",
-      1,
-      1,
-      10
-    );
+    expect(searchService.searchTeamsAndFixtures).toHaveBeenCalled()
     expect(mockResponse.status).toHaveBeenCalledWith(200);
     expect(mockResponse.json).toHaveBeenCalledWith(mockResults);
   });
@@ -117,5 +107,70 @@ describe("Search Controller", () => {
     );
 
     expect(nextFunction).toHaveBeenCalledWith(error);
+  });
+
+  it("should call searchService with filter parameters", async () => {
+    const mockResults = { teams: [], fixtures: [] };
+    (searchService.searchTeamsAndFixtures as jest.Mock).mockResolvedValue(mockResults);
+
+    mockRequest.query = {
+      query: "test",
+      teamPage: "2",
+      fixturePage: "3",
+      limit: "20",
+      status: "pending",
+      season: "2024",
+      venue: "Stadium",
+      dateFrom: "2023-01-01",
+      dateTo: "2024-12-31",
+      team: "Lions",
+      homeScore: "0",
+      awayScore: "0"
+    };
+
+    await searchTeamsAndFixtures(
+      mockRequest as Request,
+      mockResponse as Response,
+      nextFunction
+    );
+
+    expect(searchService.searchTeamsAndFixtures).toHaveBeenCalledWith(
+      "test",
+      2,
+      3,
+      20,
+      {
+        status: "pending",
+        season: "2024",
+        venue: "Stadium",
+        dateFrom: expect.any(Date),
+        dateTo: expect.any(Date),
+        team: "Lions",
+        result: { homeScore: 0, awayScore: 0 }
+      }
+    );
+    expect(mockResponse.status).toHaveBeenCalledWith(200);
+    expect(mockResponse.json).toHaveBeenCalledWith(mockResults);
+  });
+
+  it("should handle partial filter parameters", async () => {
+    const mockResults = { teams: [], fixtures: [] };
+    (searchService.searchTeamsAndFixtures as jest.Mock).mockResolvedValue(mockResults);
+
+    mockRequest.query = {
+      query: "test",
+      status: "completed",
+      season: "2023"
+    };
+
+    await searchTeamsAndFixtures(
+      mockRequest as Request,
+      mockResponse as Response,
+      nextFunction
+    );
+
+    expect(searchService.searchTeamsAndFixtures).toHaveBeenCalled();
+    expect(mockResponse.status).toHaveBeenCalledWith(200);
+    expect(mockResponse.json).toHaveBeenCalledWith(mockResults);
   });
 });

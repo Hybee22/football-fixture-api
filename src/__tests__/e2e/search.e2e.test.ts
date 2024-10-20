@@ -84,5 +84,35 @@ describe("Search API", () => {
 
       expect(response.body).toBeDefined();
     });
+
+    it("should handle filter parameters", async () => {
+      const response = await request(app)
+        .get(
+          "/api/search?query=Mighty&status=pending&season=2024&venue=Stadium&dateFrom=2023-01-01&dateTo=2024-12-31&team=Lions&homeScore=0&awayScore=0"
+        )
+        .expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body).toHaveProperty("filters");
+      expect(response.body.filters).toEqual(
+        expect.objectContaining({
+          status: "pending",
+          season: "2024",
+          venue: "Stadium",
+          dateFrom: expect.any(String),
+          dateTo: expect.any(String),
+          team: "Lions",
+          result: { homeScore: 0, awayScore: 0 },
+        })
+      );
+    });
+
+    it("should return results filtered by status", async () => {
+      const response = await request(app)
+        .get("/api/search?query=Mighty&status=pending")
+        .expect(200);
+
+      expect(response.body).toBeDefined();
+    });
   });
 });

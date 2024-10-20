@@ -16,7 +16,29 @@ export const searchTeamsAndFixtures = async (
       return res.status(400).json({ status: 'error', message: "Valid search query is required" });
     }
 
-    const results = await searchService.searchTeamsAndFixtures(query, teamPage, fixturePage, limit);
+    // Extract filter parameters from query
+    const filters: any = {};
+    if (req.query.status) filters.status = req.query.status as "pending" | "completed";
+    if (req.query.season) filters.season = req.query.season as string;
+    if (req.query.venue) filters.venue = req.query.venue as string;
+    if (req.query.dateFrom) filters.dateFrom = new Date(req.query.dateFrom as string);
+    if (req.query.dateTo) filters.dateTo = new Date(req.query.dateTo as string);
+    if (req.query.team) filters.team = req.query.team as string;
+    if (req.query.homeScore && req.query.awayScore) {
+      filters.result = {
+        homeScore: parseInt(req.query.homeScore as string),
+        awayScore: parseInt(req.query.awayScore as string)
+      };
+    }
+
+    const results = await searchService.searchTeamsAndFixtures(
+      query, 
+      teamPage, 
+      fixturePage, 
+      limit,
+      filters
+    );
+    
     res.status(200).json(results);
   } catch (error) {
     next(error);

@@ -103,16 +103,47 @@ This Football Fixture API is a robust backend service designed to manage and pro
 
 The search endpoint (`GET /api/search`) accepts the following query parameters:
 
-- `query`: The search term
+- `query`: The search term (required)
 - `teamPage`: Page number for team results (default: 1)
 - `fixturePage`: Page number for fixture results (default: 1)
 - `limit`: Number of results per page (default: 10)
 
+Additionally, the following filter parameters are now supported:
+
+- `status`: Filter fixtures by status ("pending" or "completed")
+- `season`: Filter fixtures by season
+- `venue`: Filter fixtures by venue name
+- `dateFrom`: Filter fixtures from this date (format: YYYY-MM-DD)
+- `dateTo`: Filter fixtures up to this date (format: YYYY-MM-DD)
+- `team`: Filter fixtures by team name (searches both home and away teams)
+- `homeScore`: Filter fixtures by home team score (must be used with `awayScore`)
+- `awayScore`: Filter fixtures by away team score (must be used with `homeScore`)
+
 Example:
 
 ```
-GET /api/search?query=Manchester&teamPage=1&fixturePage=2&limit=15
+GET /api/search?query=Manchester&teamPage=1&fixturePage=2&limit=15&status=pending&season=2023&venue=Old%20Trafford&dateFrom=2023-01-01&dateTo=2023-12-31&team=United
 ```
+
+This search query will:
+
+- Search for "Manchester" in team names, short names, and stadiums
+- Return page 1 of team results and page 2 of fixture results
+- Limit results to 15 per page
+- Filter fixtures to show only pending matches
+- Show fixtures from the 2023 season
+- Filter fixtures played at Old Trafford
+- Show fixtures between January 1, 2023, and December 31, 2023
+- Include fixtures where Manchester United is playing (home or away)
+
+The API returns a JSON response containing:
+
+- Matched teams with pagination information
+- Matched fixtures with pagination information
+- Applied filters
+- Search metadata (query, timestamp, etc.)
+
+Note: The search is designed to be flexible. You can use any combination of these parameters to refine your search results.
 
 ## Testing
 
