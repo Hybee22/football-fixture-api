@@ -10,7 +10,14 @@ dotenv.config();
 
 const API_KEY = process.env.FOOTBALL_DATA_API_KEY;
 const BASE_URL = "https://v3.football.api-sports.io";
-const MONGODB_URI = process.env.MONGODB_URI ?? "";
+let MONGODB_URI = "";
+
+if (process.env.NODE_ENV === "test") {
+  MONGODB_URI =
+    process.env.TEST_MONGODB_URI ?? "mongodb://mongo:27017/test-fixture-api";
+} else {
+  MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://mongo:27017/fixture-api";
+}
 
 // EPL competition ID
 const EPL_ID = "39";
@@ -31,8 +38,8 @@ async function seedDatabase() {
   } catch (error) {
     logger.error("Error seeding database:", error);
   } finally {
-    await mongoose.disconnect();
-    logger.info("Disconnected from MongoDB after seeding");
+    // await mongoose.disconnect();
+    // logger.info("Disconnected from MongoDB after seeding");
   }
 }
 
