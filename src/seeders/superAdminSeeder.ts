@@ -4,7 +4,18 @@ import mongoose from "mongoose";
 
 async function seedSuperAdmin() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI ?? "");
+    let MONGODB_URI = "";
+
+    if (process.env.NODE_ENV === "test") {
+      MONGODB_URI =
+        process.env.TEST_MONGODB_URI ??
+        "mongodb://mongo:27017/test-fixture-api";
+    } else {
+      MONGODB_URI =
+        process.env.MONGODB_URI ?? "mongodb://mongo:27017/fixture-api";
+    }
+
+    await mongoose.connect(MONGODB_URI ?? "");
 
     const superAdminData = {
       name: "Super Admin",
