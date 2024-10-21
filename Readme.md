@@ -59,7 +59,7 @@ This Football Fixture API is a robust backend service designed to manage and pro
 - `JWT_SECRET`: Secret key for JSON Web Token generation and verification
 - `MONGODB_URI`: Your MongoDB connection string
 - `TEST_MONGODB_URI`: Your MongoDB connection string for testing
-- `FOOTBALL_DATA_API_KEY`: API key for football data provider
+- `FOOTBALL_DATA_API_KEY`: API key for football data provider - You can get one [here](https://dashboard.api-football.com)
 - `SEED_DATABASE`: Set to 'true' if you want to seed the database on startup, 'false' otherwise
 - `SUPER_ADMIN_EMAIL`: Email for the super admin account
 - `SUPER_ADMIN_PASSWORD`: Password for the super admin account
