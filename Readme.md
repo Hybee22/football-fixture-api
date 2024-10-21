@@ -58,18 +58,19 @@ This Football Fixture API is a robust backend service designed to manage and pro
 - `SESSION_SECRET`: Secret key for session management
 - `JWT_SECRET`: Secret key for JSON Web Token generation and verification
 - `MONGODB_URI`: Your MongoDB connection string
+- `TEST_MONGODB_URI`: Your MongoDB connection string for testing
 - `FOOTBALL_DATA_API_KEY`: API key for football data provider
 - `SEED_DATABASE`: Set to 'true' if you want to seed the database on startup, 'false' otherwise
 - `SUPER_ADMIN_EMAIL`: Email for the super admin account
 - `SUPER_ADMIN_PASSWORD`: Password for the super admin account
 
-5. Build the TypeScript files:
+1. Build the TypeScript files:
 
    ```
    npm run build
    ```
 
-6. Start the server:
+2. Start the server:
 
    ```
    npm start
@@ -81,7 +82,7 @@ This Football Fixture API is a robust backend service designed to manage and pro
    npm run dev
    ```
 
-7. If you want to seed the database, set `SEED_DATABASE=true` in your `.env` file before starting the server.
+3. If you want to seed the database, set `SEED_DATABASE=true` in your `.env` file before starting the server.
 
 ## API Endpoints
 
