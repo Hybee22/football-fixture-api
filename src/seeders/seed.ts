@@ -8,7 +8,8 @@ import logger from "../utils/logger";
 
 dotenv.config();
 
-const API_KEY = process.env.FOOTBALL_DATA_API_KEY;
+const API_KEY =
+  process.env.FOOTBALL_DATA_API_KEY ?? "6637f37744304665cee695699db66924";
 const BASE_URL = "https://v3.football.api-sports.io";
 let MONGODB_URI = "";
 
